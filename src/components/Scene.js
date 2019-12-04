@@ -1,0 +1,111 @@
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import iss from '../assets/ISS_stationary.glb';
+
+import './Scene.css';
+// https://threejs.org/examples/#webgl_lights_spotlights
+
+
+function Scene(props) {
+  // const [gameScene, setGameScene] = useState(null);
+
+  const el = useRef(null);
+  let scene, camera, renderer, object, controls, requestID;
+
+  useEffect(() => {
+    sceneSetup();
+    addCustomSceneObjects();
+    startAnimationLoop();
+  },[]);
+
+  function sceneSetup() {
+    // get container dimensions and use them for scene sizing
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(
+        75, // fov = field of view
+        width / height, // aspect ratio
+        0.1, // near plane
+        1000 // far plane
+    );
+    
+    // set some distance from a cube that is located at z = 0
+    camera.position.z = 100;
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( width, height );
+    
+    controls = new OrbitControls( camera, renderer.domElement );
+
+    el.current.appendChild( renderer.domElement ); // mount using React ref
+  }
+
+  function addCustomSceneObjects() {
+    var loader = new GLTFLoader();
+
+    loader.load(
+      iss,
+      (gltf) => {
+        object = gltf.scene;
+        scene.add(object);
+      },
+      (xhr) => {
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    const lights = [];
+    lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+    lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+    lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+
+    lights[ 0 ].position.set( 0, 200, 0 );
+    lights[ 1 ].position.set( 100, 200, 100 );
+    lights[ 2 ].position.set( - 100, - 200, - 100 );
+
+    scene.add( lights[ 0 ] );
+    scene.add( lights[ 1 ] );
+    scene.add( lights[ 2 ] );
+  }
+
+  function createSpotlight( color ) {
+    var newObj = new THREE.SpotLight( color, 2 );
+    newObj.castShadow = true;
+    newObj.angle = 0.3;
+    newObj.penumbra = 0.2;
+    newObj.decay = 2;
+    newObj.distance = 50;
+    return newObj;
+  }
+
+  function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+  }
+
+  function startAnimationLoop() {
+    if (object && object.rotation) {
+      // object.rotation.x += 0.01;
+      // object.rotation.y += 0.01;
+    }
+    controls.update();
+    renderer.render( scene, camera );
+    requestID = window.requestAnimationFrame(startAnimationLoop);
+  }
+
+  return (
+    <div className="Scene" ref={el}>
+
+    </div>
+  );
+}
+
+export default Scene;

@@ -4,7 +4,7 @@ import { promisifyLoader } from '../Utilities/threeUtils';
 
 import iss from '../../assets/ISS_stationary.glb';
 
-const loader = promisifyLoader(new GLTFLoader());
+const loader = promisifyLoader(new GLTFLoader(), onProgress);
 
 export async function load() {
 	return loader.load(iss)
@@ -14,23 +14,14 @@ export async function load() {
 		.catch(error => {
 			console.log(error);
 		})
-
- // let loader = new GLTFLoader();
- //    loader.load(
- //      iss,
- //      (gltf) => {
- //        object = gltf.scene;
- //        scene.add(object);
- //      },
- //      (xhr) => {
- //        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
- //      },
- //      (error) => {
- //        console.log(error);
- //      }
- //    );
 }
 
-export function update() {
-	console.log("updating iss");
+export function update(iss) {
+	if (iss && iss.rotation) {
+      iss.rotation.y += 0.01;
+    }
+}
+
+function onProgress(xhr) {
+	// console.log(xhr.loaded);
 }

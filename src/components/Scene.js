@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import * as Iss from './GameObjects/iss';
+import * as Earth from './GameObjects/earth';
 
 import './Scene.css';
 // https://threejs.org/examples/#webgl_lights_spotlights
@@ -12,7 +13,7 @@ function Scene(props) {
   // const [gameScene, setGameScene] = useState(null);
 
   const el = useRef(null);
-  let scene, camera, renderer, object, controls; // requestID
+  let scene, camera, renderer, iss, earth, controls; // requestID
 
   useEffect(() => {
     sceneSetup();
@@ -45,8 +46,13 @@ function Scene(props) {
   }
 
   async function addGameObjects() {
-    const iss = await Iss.load();
-    scene.add(iss.scene);
+    const promisedObjects = [];
+
+    const [ issScene, earthScene ] = await Promise.all([Iss.load(), Earth.load()]);
+    iss = issScene.scene;
+    earth = earthScene;
+    scene.add(iss);
+    scene.add(earth);
 
     const lights = [];
     lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
@@ -62,16 +68,6 @@ function Scene(props) {
     scene.add( lights[ 2 ] );
   }
 
-  // function createSpotlight( color ) {
-  //   var newObj = new THREE.SpotLight( color, 2 );
-  //   newObj.castShadow = true;
-  //   newObj.angle = 0.3;
-  //   newObj.penumbra = 0.2;
-  //   newObj.decay = 2;
-  //   newObj.distance = 50;
-  //   return newObj;
-  // }
-
   function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -79,10 +75,8 @@ function Scene(props) {
   }
 
   function animate() {
-    if (object && object.rotation) {
-      // object.rotation.x += 0.01;
-      // object.rotation.y += 0.01;
-    }
+    Iss.update(iss);
+    Earth.update(earth);
     controls.update();
     renderer.render( scene, camera );
     window.requestAnimationFrame(animate);

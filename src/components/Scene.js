@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import iss from '../assets/ISS_stationary.glb';
+
+import * as Iss from './GameObjects/iss';
 
 import './Scene.css';
 // https://threejs.org/examples/#webgl_lights_spotlights
@@ -12,12 +12,12 @@ function Scene(props) {
   // const [gameScene, setGameScene] = useState(null);
 
   const el = useRef(null);
-  let scene, camera, renderer, object, controls, requestID;
+  let scene, camera, renderer, object, controls; // requestID
 
   useEffect(() => {
     sceneSetup();
-    addCustomSceneObjects();
-    startAnimationLoop();
+    addGameObjects();
+    animate();
   },[]);
 
   function sceneSetup() {
@@ -44,22 +44,9 @@ function Scene(props) {
     el.current.appendChild( renderer.domElement ); // mount using React ref
   }
 
-  function addCustomSceneObjects() {
-    var loader = new GLTFLoader();
-
-    loader.load(
-      iss,
-      (gltf) => {
-        object = gltf.scene;
-        scene.add(object);
-      },
-      (xhr) => {
-        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+  async function addGameObjects() {
+    const iss = await Iss.load();
+    scene.add(iss.scene);
 
     const lights = [];
     lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
@@ -75,15 +62,15 @@ function Scene(props) {
     scene.add( lights[ 2 ] );
   }
 
-  function createSpotlight( color ) {
-    var newObj = new THREE.SpotLight( color, 2 );
-    newObj.castShadow = true;
-    newObj.angle = 0.3;
-    newObj.penumbra = 0.2;
-    newObj.decay = 2;
-    newObj.distance = 50;
-    return newObj;
-  }
+  // function createSpotlight( color ) {
+  //   var newObj = new THREE.SpotLight( color, 2 );
+  //   newObj.castShadow = true;
+  //   newObj.angle = 0.3;
+  //   newObj.penumbra = 0.2;
+  //   newObj.decay = 2;
+  //   newObj.distance = 50;
+  //   return newObj;
+  // }
 
   function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -91,14 +78,14 @@ function Scene(props) {
     renderer.setSize( window.innerWidth, window.innerHeight );
   }
 
-  function startAnimationLoop() {
+  function animate() {
     if (object && object.rotation) {
       // object.rotation.x += 0.01;
       // object.rotation.y += 0.01;
     }
     controls.update();
     renderer.render( scene, camera );
-    requestID = window.requestAnimationFrame(startAnimationLoop);
+    window.requestAnimationFrame(animate);
   }
 
   return (

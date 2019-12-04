@@ -1,0 +1,17 @@
+
+
+.Menu {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	width: 100px;
+	height: 200px;
+	border: 1px solid #FFF;
+	/*background-color: white;*/
+	@include background-opacity(white, 0.5);
+}
+
+@mixin background-opacity($color, $opacity: 0.3) {
+    background: $color; /* The Fallback */
+    background: rgba($color, $opacity);
+}

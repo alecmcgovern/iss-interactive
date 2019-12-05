@@ -46,9 +46,8 @@ function Scene(props) {
   }
 
   async function addGameObjects() {
-    const promisedObjects = [];
-
-    const [ issScene, earthScene ] = await Promise.all([Iss.load(), Earth.load()]);
+    const earthRadius = 10;
+    const [ issScene, earthScene ] = await Promise.all([Iss.load(earthRadius), Earth.load(earthRadius)]);
     iss = issScene.scene;
     earth = earthScene;
     scene.add(iss);
@@ -75,7 +74,7 @@ function Scene(props) {
   }
 
   function animate() {
-    Iss.update(iss);
+    // Iss.update(iss);
     Earth.update(earth);
     controls.update();
     renderer.render( scene, camera );

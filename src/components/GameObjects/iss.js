@@ -6,9 +6,10 @@ import iss from '../../assets/ISS_stationary.glb';
 
 const loader = promisifyLoader(new GLTFLoader(), onProgress);
 
-export async function load() {
+export async function load(earthRadius) {
 	return loader.load(iss)
 		.then(gameObj => {
+			gameObj.scene.scale.set(0.5, 0.5, 0.5);
 			return gameObj;
 		})
 		.catch(error => {
@@ -23,5 +24,5 @@ export function update(iss) {
 }
 
 function onProgress(xhr) {
-	// console.log(xhr.loaded);
+	// console.log(xhr);
 }

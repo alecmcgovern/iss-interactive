@@ -1,15 +1,20 @@
 import React from 'react';
-import sceneConfig from './components/sceneConfig';
-import Scene from './components/Scene';
-import Menu from './components/Menu';
-import './App.css';
+import { BrowserRouter, Route } from 'react-router-dom';
+import Scene from './components/scene';
+import Controller from './MobileController/controller';
+
+import './App.scss';
 
 function App() {	
 	return (
-		<div className="App">
-			<Scene config={sceneConfig}/>
-			{/*<Menu />*/}
-		</div>
+		<BrowserRouter>
+			<Route path="/" exact render={(props) => {
+				return <Scene />
+			}}/>
+			<Route path="/controller" exact render={(props) => {
+				return <Controller />
+			}}/>
+		</BrowserRouter>
 	);
 }
 

@@ -5,20 +5,23 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as Iss from './GameObjects/iss';
 import * as Earth from './GameObjects/earth';
 
-import './Scene.css';
+import './scene.scss';
 // https://threejs.org/examples/#webgl_lights_spotlights
 
 
 function Scene(props) {
-  // const [gameScene, setGameScene] = useState(null);
-
   const el = useRef(null);
   let scene, camera, renderer, iss, earth, controls; // requestID
 
   useEffect(() => {
+    window.addEventListener("resize", onResize);
     sceneSetup();
     addGameObjects();
     animate();
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    }
   },[]);
 
   function sceneSetup() {
@@ -46,7 +49,7 @@ function Scene(props) {
   }
 
   async function addGameObjects() {
-    const earthRadius = 10;
+    const earthRadius = 20;
     const [ issScene, earthScene ] = await Promise.all([Iss.load(earthRadius), Earth.load(earthRadius)]);
     iss = issScene.scene;
     earth = earthScene;

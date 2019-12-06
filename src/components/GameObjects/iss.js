@@ -9,7 +9,7 @@ const loader = promisifyLoader(new GLTFLoader(), onProgress);
 export async function load(earthRadius) {
 	return loader.load(iss)
 		.then(gameObj => {
-			gameObj.scene.scale.set(0.5, 0.5, 0.5);
+			gameObj.scene.scale.set(0.8, 0.8, 0.8);
 			return gameObj;
 		})
 		.catch(error => {

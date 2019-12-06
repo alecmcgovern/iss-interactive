@@ -9,7 +9,7 @@ export async function load(radius) {
 	return loader.load(daymap)
 		.then(texture => {
 			let sphere = new THREE.SphereGeometry(radius, 50, 50);
-			let material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
+			let material = new THREE.MeshBasicMaterial({ map: texture });
 			let mesh = new THREE.Mesh(sphere, material);
 
 			return mesh;

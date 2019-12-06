@@ -1,15 +1,24 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import * as socketApi from '../sockets/api';
+
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-
 import * as Iss from './GameObjects/iss';
 import * as Earth from './GameObjects/earth';
+import * as Lights from './GameObjects/lights';
+
+import { eulerToQuaternion } from './Utilities/threeUtils';
 
 import './scene.scss';
 // https://threejs.org/examples/#webgl_lights_spotlights
 
+const DIMENSIONS = {
+  earthRadius: 20
+}
 
 function Scene(props) {
+  console.log(props.rotation);
+
   const el = useRef(null);
   let scene, camera, renderer, iss, earth, controls; // requestID
 
@@ -49,25 +58,14 @@ function Scene(props) {
   }
 
   async function addGameObjects() {
-    const earthRadius = 20;
-    const [ issScene, earthScene ] = await Promise.all([Iss.load(earthRadius), Earth.load(earthRadius)]);
+    const [ issScene, earthScene ] = await Promise.all([Iss.load(DIMENSIONS.earthRadius), Earth.load(DIMENSIONS.earthRadius)]);
     iss = issScene.scene;
     earth = earthScene;
     scene.add(iss);
-    scene.add(earth);
+    // scene.add(earth);
 
-    const lights = [];
-    lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-    lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-    lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
-
-    lights[ 0 ].position.set( 0, 200, 0 );
-    lights[ 1 ].position.set( 100, 200, 100 );
-    lights[ 2 ].position.set( - 100, - 200, - 100 );
-
-    scene.add( lights[ 0 ] );
-    scene.add( lights[ 1 ] );
-    scene.add( lights[ 2 ] );
+    const lights = Lights.load();
+    lights.forEach((l) => { scene.add(l) });
   }
 
   function onResize() {
@@ -77,17 +75,21 @@ function Scene(props) {
   }
 
   function animate() {
+    // controls.update();
+    
     // Iss.update(iss);
+    if (camera) {
+      const q = eulerToQuaternion(props.rotation);
+      camera.setRotationFromQuaternion(q);
+    }
+
     Earth.update(earth);
-    controls.update();
     renderer.render( scene, camera );
     window.requestAnimationFrame(animate);
   }
 
   return (
-    <div className="Scene" ref={el}>
-
-    </div>
+    <div className="Scene" ref={el}></div>
   );
 }
 

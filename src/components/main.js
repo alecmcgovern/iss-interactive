@@ -49,21 +49,9 @@ function Main() {
     //   }
     // });
 
-    socketApi.subscribeToOrientation((err, orientation) => {
-    	console.log(orientation);
-		// window.requestAnimationFrame(() => {
-			// setRotation({
-			// 	x : orientation.x,
-			// 	y : orientation.y,
-			// 	z : orientation.z
-			// })
-		// });
-    });
-
 	return (
 		<div className="main">
 			<Scene rotation={rotation} />
-      <Controls />
 		</div>
 	);
 }

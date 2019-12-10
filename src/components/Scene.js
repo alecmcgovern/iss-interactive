@@ -18,7 +18,8 @@ const DIMENSIONS = {
 
 function Scene(props) {
   const el = useRef(null);
-  let scene, camera, renderer, iss, earth, controls; // requestID
+  let scene, camera, renderer, iss, earth, controls;
+  let rotation = { x: 90, y: 0, z: 0 };
 
   useEffect(() => {
     window.addEventListener("resize", onResize);
@@ -30,6 +31,11 @@ function Scene(props) {
       window.removeEventListener("resize", onResize);
     }
   },[]);
+
+  socketApi.subscribeToOrientation((err, orientation) => {
+    console.log(orientation);
+    rotation = orientation;
+  });
 
   function sceneSetup() {
     // get container dimensions and use them for scene sizing
@@ -50,7 +56,7 @@ function Scene(props) {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( width, height );
     
-    controls = new OrbitControls( camera, renderer.domElement );
+    // controls = new OrbitControls( camera, renderer.domElement );
 
     el.current.appendChild( renderer.domElement ); // mount using React ref
   }
@@ -77,7 +83,7 @@ function Scene(props) {
 
     // Iss.update(iss);
     if (camera) {
-      const q = eulerToQuaternion(props.rotation);
+      const q = eulerToQuaternion(rotation);
       camera.setRotationFromQuaternion(q);
     }
 

@@ -16,29 +16,33 @@ const DIMENSIONS = {
   earthRadius: 20
 }
 
+const tweenSpeed = 2000;
+
 function Scene(props) {
   const el = useRef(null);
   let scene, camera, renderer, iss, earth, controls;
   let rotation = { x: 90, y: 0, z: 0 };
+  let orientArray = [];
 
   useEffect(() => {
     window.addEventListener("resize", onResize);
     sceneSetup();
     addGameObjects();
+
     animate();
+
+    socketApi.subscribeToOrientation((err, orientation) => {
+      window.requestAnimationFrame(() => {
+        rotation = orientation;
+      });
+    });
 
     return () => {
       window.removeEventListener("resize", onResize);
     }
   },[]);
 
-  socketApi.subscribeToOrientation((err, orientation) => {
-    console.log(orientation);
-    rotation = orientation;
-  });
-
   function sceneSetup() {
-    // get container dimensions and use them for scene sizing
     const width = window.innerWidth;
     const height = window.innerHeight;
 
@@ -53,10 +57,10 @@ function Scene(props) {
     // set some distance from a cube that is located at z = 0
     camera.position.z = 100;
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize( width, height );
     
-    // controls = new OrbitControls( camera, renderer.domElement );
+    controls = new OrbitControls( camera, renderer.domElement );
 
     el.current.appendChild( renderer.domElement ); // mount using React ref
   }
@@ -80,14 +84,13 @@ function Scene(props) {
 
   function animate() {
     // controls.update();
-
     // Iss.update(iss);
     if (camera) {
       const q = eulerToQuaternion(rotation);
       camera.setRotationFromQuaternion(q);
     }
 
-    Earth.update(earth);
+    // Earth.update(earth);
     renderer.render( scene, camera );
     window.requestAnimationFrame(animate);
   }

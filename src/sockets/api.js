@@ -1,7 +1,8 @@
 import openSocket from 'socket.io-client';
 
-// const socket = openSocket('http://localhost:8000');
-const socket = openSocket(window.location.hostname);
+// const socket = openSocket('http://192.168.1.242:8000');
+const socket = openSocket('https://stale-deer-81.localtunnel.me/');
+// const socket = openSocket(window.location.hostname);
 
 
 // CLIENT CONNECTION CONTROLS
@@ -31,14 +32,6 @@ export function subscribeToOrientation(callback) {
 	socket.on('orientationReceived', orientationReceived => callback(null, orientationReceived));
 }
 
-export function subscribeToTargetOrientation(callback) {
-	socket.on('targetOrientationReceived', targetOrientationReceived => callback(null, targetOrientationReceived));
-}
-
 export function sendOrientation(orientation) {
 	socket.emit('sendOrientation', orientation);
-}
-
-export function sendTargetOrientation(targetOrientation) {
-	socket.emit('sendTargetOrientation', targetOrientation);
 }

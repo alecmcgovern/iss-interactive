@@ -17,8 +17,6 @@ const DIMENSIONS = {
 }
 
 function Scene(props) {
-  console.log(props.rotation);
-
   const el = useRef(null);
   let scene, camera, renderer, iss, earth, controls; // requestID
 
@@ -76,7 +74,7 @@ function Scene(props) {
 
   function animate() {
     // controls.update();
-    
+
     // Iss.update(iss);
     if (camera) {
       const q = eulerToQuaternion(props.rotation);

@@ -27,49 +27,50 @@ io.on('connection', function(client) {
 	console.log(client.id + " connected");
 	io.emit('clientConnected', client.id);
 	io.clients((err, clients) => {
-		activeClients.allUsers = clients;
-		activeClients.controller = controllingUserId;
-		io.emit('activeClientList', activeClients);
+		// activeClients.allUsers = clients;
+		// activeClients.controller = controllingUserId;
+		// io.emit('activeClientList', activeClients);
 	});
 
 	client.on('disconnect', (reason) => {
 		console.log(client.id + " disconnected because: " + reason);
 		io.emit('clientDisconnected', client.id);
 
-		if (controllingUserId === client.id) {
-			controllingUserId = null;
-			io.emit('controllingUserDisconnected', controllingUserId);
-		}
+		// if (controllingUserId === client.id) {
+		// 	controllingUserId = null;
+		// 	io.emit('controllingUserDisconnected', controllingUserId);
+		// }
 
-		io.clients((err, clients) => {
-			activeClients.allUsers = clients;
-			activeClients.controller = controllingUserId;
-			io.emit('activeClientList', activeClients);
-		});
+		// io.clients((err, clients) => {
+		// 	activeClients.allUsers = clients;
+		// 	activeClients.controller = controllingUserId;
+		// 	io.emit('activeClientList', activeClients);
+		// });
 	});
 
 	client.on('sendDeviceType', (deviceType) => {
-		if (deviceType === "iOS" || deviceType === "Android") {
-			if (controllingUserId === null) {
-				controllingUserId = client.id;
+		// if (deviceType === "iOS" || deviceType === "Android") {
+		// 	if (controllingUserId === null) {
+		// 		controllingUserId = client.id;
 
-				activeClients.controller = controllingUserId;
-				io.emit('activeClientList', activeClients);
+		// 		activeClients.controller = controllingUserId;
+		// 		io.emit('activeClientList', activeClients);
 
-				client.emit('controllingUserResponse', true);
-			} else {
-				client.emit('controllingUserResponse', false);
-			}
-		} else {
-			client.emit('controllingUserResponse', false);
-		}
+		// 		client.emit('controllingUserResponse', true);
+		// 	} else {
+		// 		client.emit('controllingUserResponse', false);
+		// 	}
+		// } else {
+		// 	client.emit('controllingUserResponse', false);
+		// }
 	});
 
 	// send device orientation
 	client.on('sendOrientation', (orientation) => {
-		if (controllingUserId === client.id) {
+		console.log(orientation);
+		// if (controllingUserId === client.id) {
 			io.emit('orientationReceived', orientation);
-		}
+		// }
 	});
 
 	client.on('sendTargetOrientation', (targetOrientation) => {

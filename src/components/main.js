@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import * as socketApi from '../sockets/api';
 
 import Scene from './scene';
+import Controls from './Controls/controls';
 
 import './main.scss';
 
@@ -12,19 +13,19 @@ function Main() {
 	const [ gameStarted, setGameStarted ] = useState(false); 
 
 	socketApi.subscribeToClientConnection((err, clientId) => {
-      let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      // let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-      if (iOS) {
-        console.log("IOS user connected");
-        socketApi.sendDeviceType("iOS");
-      } else {
-        let userAgent = navigator.userAgent || navigator.vendor;
+      // if (iOS) {
+      //   console.log("IOS user connected");
+      //   socketApi.sendDeviceType("iOS");
+      // } else {
+      //   let userAgent = navigator.userAgent || navigator.vendor;
 
-        if (/android/i.test(userAgent)) {
-          console.log("Android user connected");
-            socketApi.sendDeviceType("Android");
-        }
-      }
+      //   if (/android/i.test(userAgent)) {
+      //     console.log("Android user connected");
+      //       socketApi.sendDeviceType("Android");
+      //   }
+      // }
 
       console.log(clientId + " has connected");
     });
@@ -33,34 +34,36 @@ function Main() {
       console.log(clientId + " has disconnected");
     });
 
-    socketApi.subscribeToActiveClientList((err, clientList) => {
-      console.log(clientList);
-      setClients(clientList);
+    // socketApi.subscribeToActiveClientList((err, clientList) => {
+    //   console.log(clientList);
+    //   setClients(clientList);
 
-      if (!clientList.controller) {
-        setGameStarted(false);
-      }
-    });
+    //   if (!clientList.controller) {
+    //     setGameStarted(false);
+    //   }
+    // });
 
-    socketApi.subscribeToControllingUserResponse((err, response) => {
-      if (!inControl) {
-      	setIncontrol(!!response);
-      }
-    });
+    // socketApi.subscribeToControllingUserResponse((err, response) => {
+    //   if (!inControl) {
+    //   	setIncontrol(!!response);
+    //   }
+    // });
 
     socketApi.subscribeToOrientation((err, orientation) => {
-      window.requestAnimationFrame(() => {
-      	setRotation({
-            x : orientation.x,
-            y : orientation.y,
-            z : orientation.z
-      	})
-      });
+    	console.log(orientation);
+		// window.requestAnimationFrame(() => {
+			// setRotation({
+			// 	x : orientation.x,
+			// 	y : orientation.y,
+			// 	z : orientation.z
+			// })
+		// });
     });
 
 	return (
 		<div className="main">
 			<Scene rotation={rotation} />
+      <Controls />
 		</div>
 	);
 }

@@ -52,6 +52,7 @@ function Main() {
 	return (
 		<div className="main">
 			<Scene rotation={rotation} />
+      {/*<Controls />*/}
 		</div>
 	);
 }

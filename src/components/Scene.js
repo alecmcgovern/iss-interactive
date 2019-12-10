@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as socketApi from '../sockets/api';
 
 import * as THREE from 'three';
@@ -6,6 +6,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as Iss from './GameObjects/iss';
 import * as Earth from './GameObjects/earth';
 import * as Lights from './GameObjects/lights';
+import * as Marker from './GameObjects/marker';
 
 import { eulerToQuaternion } from './Utilities/threeUtils';
 
@@ -16,13 +17,10 @@ const DIMENSIONS = {
   earthRadius: 20
 }
 
-const tweenSpeed = 2000;
-
 function Scene(props) {
   const el = useRef(null);
-  let scene, camera, renderer, iss, earth, controls;
+  let scene, camera, renderer, iss, earth, controls, marker;
   let rotation = { x: 90, y: 0, z: 0 };
-  let orientArray = [];
 
   useEffect(() => {
     window.addEventListener("resize", onResize);
@@ -66,6 +64,9 @@ function Scene(props) {
   }
 
   async function addGameObjects() {
+    marker = Marker.load();
+    scene.add(marker);
+
     const [ issScene, earthScene ] = await Promise.all([Iss.load(DIMENSIONS.earthRadius), Earth.load(DIMENSIONS.earthRadius)]);
     iss = issScene.scene;
     earth = earthScene;
@@ -83,11 +84,13 @@ function Scene(props) {
   }
 
   function animate() {
-    // controls.update();
+    controls.update();
     // Iss.update(iss);
+    Marker.update(marker);
+
     if (camera) {
-      const q = eulerToQuaternion(rotation);
-      camera.setRotationFromQuaternion(q);
+      // const q = eulerToQuaternion(rotation);
+      // camera.setRotationFromQuaternion(q);
     }
 
     // Earth.update(earth);
@@ -96,7 +99,7 @@ function Scene(props) {
   }
 
   return (
-    <div className="Scene" ref={el}></div>
+    <div className="scene" ref={el}></div>
   );
 }
 
